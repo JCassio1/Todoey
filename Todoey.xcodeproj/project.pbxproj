@@ -13,6 +13,7 @@
 		F25A6B4720D0AA8F00BDD871 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F25A6B4520D0AA8F00BDD871 /* Main.storyboard */; };
 		F25A6B4920D0AA9100BDD871 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F25A6B4820D0AA9100BDD871 /* Assets.xcassets */; };
 		F25A6B4C20D0AA9100BDD871 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F25A6B4A20D0AA9100BDD871 /* LaunchScreen.storyboard */; };
+		F29A4A4F20D341D10086694A /* CategoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F29A4A4E20D341D10086694A /* CategoryTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		F25A6B4820D0AA9100BDD871 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F25A6B4B20D0AA9100BDD871 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F25A6B4D20D0AA9100BDD871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F29A4A4E20D341D10086694A /* CategoryTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,6 +50,7 @@
 		F229DD1520D1A12A0009BC0C /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				F29A4A4E20D341D10086694A /* CategoryTableViewController.swift */,
 				F25A6B4320D0AA8F00BDD871 /* TodoListViewController.swift */,
 			);
 			path = Controllers;
@@ -165,6 +168,7 @@
 				F25A6B4420D0AA8F00BDD871 /* TodoListViewController.swift in Sources */,
 				F254832C20D2FC5800FB704A /* DataModel.xcdatamodeld in Sources */,
 				F25A6B4220D0AA8F00BDD871 /* AppDelegate.swift in Sources */,
+				F29A4A4F20D341D10086694A /* CategoryTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
