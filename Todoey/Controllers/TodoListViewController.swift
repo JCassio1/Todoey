@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import CoreData
 
-class TodoListViewController: UITableViewController {
+class TodoListViewController: UITableViewController{
     
 
 
@@ -16,12 +17,12 @@ class TodoListViewController: UITableViewController {
     
             let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
+            let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
-        
-        print(dataFilePath)
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
         
         
         loadItems()
@@ -83,9 +84,10 @@ class TodoListViewController: UITableViewController {
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             //What will happen once the user clicks the add button on view to add to list
             
-            let newItem = Item()
-            newItem.title = textField.text!
             
+            let newItem = Item(context: self.context)
+            newItem.title = textField.text!
+            //newItem.done = false
             self.itemArray.append(newItem)
 
  
@@ -111,13 +113,11 @@ class TodoListViewController: UITableViewController {
         let encoder = PropertyListEncoder()
         
         do{
-            
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+            try context.save()
         }
             
         catch{
-            print("Error! Encoding item array, \(error)")
+            print("Error saving context \(error)")
         }
         
         
@@ -127,23 +127,47 @@ class TodoListViewController: UITableViewController {
         
     }
     
-    func loadItems() {
-    
-        if let data = try? Data(contentsOf: dataFilePath!){
-            
-            let decoder = PropertyListDecoder()
-            
-            do{
-            itemArray = try decoder.decode([Item].self, from: data)
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()){
+
+        
+        do{
+        itemArray = try context.fetch(request)
+        } 
+        
+        catch{
+            print("Error fetching data from context \(error)")
+        }
             }
+    
+}
+
+//Mark: UI SearchBar method
+
+extension TodoListViewController: UISearchBarDelegate{
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        loadItems()
+        
+        tableView.reloadData()
+        
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
             
-            catch{
-                print("Error decoding item array, \(error)")
-                
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
             }
             
         }
-    
     }
     
 }
