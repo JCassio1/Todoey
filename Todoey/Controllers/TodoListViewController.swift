@@ -69,7 +69,8 @@ class TodoListViewController: UITableViewController{
             do{
                 
                 try realm.write{
-                    item.done = !item.done
+//                    item.done = !item.done
+                    realm.delete(item)
                 }
                 
             }
@@ -79,7 +80,7 @@ class TodoListViewController: UITableViewController{
             }
         }
         
-
+        tableView.reloadData()
         
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -100,6 +101,7 @@ class TodoListViewController: UITableViewController{
                 try self.realm.write {
                     let newItem = Item()
                     newItem.title = textField.text!
+                    newItem.dateCreated = Date()
                     currentCategory.items.append(newItem)
                     }
             }
@@ -157,4 +159,27 @@ class TodoListViewController: UITableViewController{
 
 //Mark: UI SearchBar method
 
+extension TodoListViewController: UISearchBarDelegate{
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
+        
+        tableView.reloadData()
+    }
+    
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            DispatchQueue.main.sync {
+                searchBar.resignFirstResponder()
+            }
+        }
+        
+    }
+    
+}
 
