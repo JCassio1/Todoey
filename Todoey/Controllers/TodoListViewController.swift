@@ -108,10 +108,10 @@ class TodoListViewController: UITableViewController{
                 catch{
                     print("Error saving new items \(error)")
                 }
-
+                self.tableView.reloadData()
         }
             
-            self.tableView.reloadData()
+            
         }
     
         
