@@ -8,12 +8,16 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
-class TodoListViewController: UITableViewController{
+class TodoListViewController: SwipeTableViewController{
     
 
     var realm = try! Realm()
     var todoItems: Results<Item>?
+    
+    
+    @IBOutlet weak var searchBar: UISearchBar!
     
     
     var selectedCategory : Category? {
@@ -25,12 +29,41 @@ class TodoListViewController: UITableViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        //print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
+        tableView.separatorStyle = .none
+
+        }
+
+    
+    override func viewWillAppear(_ animated: Bool) {
         
-//        if let items = defaults.array(forKey: "TodoListArray") as? [Item]{
-//            itemArray = items
-//        }
-            }
+        guard let navBar = navigationController?.navigationBar else{fatalError("Navigation controller does not exist!")}
+        
+        guard let colourHex = selectedCategory?.cellColor else {fatalError("color property of category does not exist")}
+                    
+            title = selectedCategory?.name //updates items navigation title
+
+            
+        guard let navBarColour = UIColor(hexString: colourHex) else{fatalError("Problem with navBarColour")}
+                    
+                        navBar.barTintColor = navBarColour
+                        navBar.tintColor = ContrastColorOf(navBarColour, returnFlat: true)
+                        searchBar.barTintColor = navBarColour
+                        navBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : ContrastColorOf(navBarColour, returnFlat: true)]
+}
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        guard let originalColour = UIColor(hexString: "1D9BF6") else{fatalError("Original colour did not pass")}
+        navigationController?.navigationBar.barTintColor = originalColour
+        navigationController?.navigationBar.tintColor = FlatWhite()
+        navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : ContrastColorOf(FlatWhite(), returnFlat: true)]
+    }
+    
+
+
+
+
     
     //MARK: - TableView Datasource Methods
     
@@ -40,11 +73,19 @@ class TodoListViewController: UITableViewController{
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
-        
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = todoItems?[indexPath.row]{
             cell.textLabel?.text = todoItems? [indexPath.row].title ?? "No Items added yet"
+            
+            
+            if let colour = UIColor(hexString: selectedCategory!.cellColor)?.darken(byPercentage: CGFloat(indexPath.row) / CGFloat(todoItems!.count)){
+                
+                cell.backgroundColor = colour
+                cell.textLabel?.textColor = ContrastColorOf(colour, returnFlat: true)
+            }
+            
+            
             
             cell.accessoryType = item.done == true ? .checkmark : .none //replaced if/else
         }
@@ -92,6 +133,7 @@ class TodoListViewController: UITableViewController{
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
         var textField = UITextField()
+        
         let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
@@ -149,9 +191,25 @@ class TodoListViewController: UITableViewController{
     
     func loadItems() {
         
-        //itemArray = selectedCategory?.items.sorted(byKeyPath: "Items", ascending: true)
+        todoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
         
         tableView.reloadData()
+        
+        
+    }
+    
+    override func updateModel(at indexPath: IndexPath) {
+        if let item = self.todoItems?[indexPath.row]{
+            
+            do{
+                try self.realm.write{
+                    self.realm.delete(item)
+                }
+            }
+            catch{
+                print("Category could not be deleted! \(error)")
+            }
+        }
     }
     
  
