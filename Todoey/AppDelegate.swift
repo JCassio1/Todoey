@@ -3,7 +3,7 @@
 //  Todoey
 //
 //  Created by MR.Robot 💀 on 13/06/2018.
-//  Copyright © 2018 Joselson DIas. All rights reserved.
+//  Copyright © 2018 Joselson Dias. All rights reserved.
 //
 
 import UIKit

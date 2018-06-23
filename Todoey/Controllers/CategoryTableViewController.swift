@@ -40,8 +40,13 @@ class CategoryTableViewController: SwipeTableViewController {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let category = categoryArray?[indexPath.row]{
-            cell.textLabel?.text = category.name ?? "No categories added yet!"
-            cell.backgroundColor = UIColor(hexString: category.cellColor ?? "1D9BF6")
+            
+            cell.textLabel?.text = category.name
+            
+            guard let categorycolour = UIColor(hexString : category.cellColor) else{fatalError()}
+            
+            cell.backgroundColor = categorycolour
+            cell.textLabel?.textColor = ContrastColorOf(categorycolour, returnFlat: true)
         }
 
         
@@ -82,7 +87,7 @@ class CategoryTableViewController: SwipeTableViewController {
         }
         
         //!!!: Reloading data to load in table view
-        self.tableView.reloadData()
+        tableView.reloadData()
         
     }
     
@@ -90,7 +95,6 @@ class CategoryTableViewController: SwipeTableViewController {
     func loadCategory(){
         
         categoryArray = realm.objects(Category.self)
-        
         
         tableView.reloadData()
     }
@@ -104,11 +108,11 @@ class CategoryTableViewController: SwipeTableViewController {
 
             do{
                 try self.realm.write{
-                    self.realm.delete(toDelete )
+                    self.realm.delete(toDelete)
                 }
             }
             catch{
-                print("Category could not be deleted! \(error)")
+                print("Category could not be deleted, \(error)")
             }
         }
     }
@@ -124,8 +128,6 @@ class CategoryTableViewController: SwipeTableViewController {
         let alert = UIAlertController(title: "Add New Category", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
-            
-        //What we want to happen when user clicks the add button on view to add to category
             
         let newCategory = Category()
         newCategory.name = textField.text!
